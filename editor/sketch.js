@@ -12,27 +12,10 @@ export function drawReceipt(p) {
   const { width: w, height: h } = p;
   const margin = 24;
 
-  p.noStroke();
-  p.fill(0);
-  p.textFont("monospace");
-  p.textStyle(p.BOLD);
-  p.textAlign(p.LEFT, p.TOP);
-  p.textSize(11);
-  p.text("BUTTERLABS / ORBITAL SYSTEMS", margin, 24);
-  p.textAlign(p.RIGHT, p.TOP);
-  p.text("REC-067", w - margin, 24);
-
-  p.textStyle(p.NORMAL);
-  p.textSize(9);
-  p.textAlign(p.LEFT, p.TOP);
-  p.text("FIELD RECEIPT", margin, 48);
-  p.textAlign(p.RIGHT, p.TOP);
-  p.text("STATUS: TRANSMISSION ACQUIRED", w - margin, 48);
-
-  dashedLine(p, margin, 70, w - margin, 70, 5, 4);
-  drawTelemetry(p, margin, 88, w - margin * 2);
-  drawMissionWindow(p, margin, 166, w - margin * 2, 650);
-  drawSignalStrip(p, margin, 840, w - margin * 2);
+  drawButterLabsMark(p, margin, 17);
+  dashedLine(p, margin, 64, w - margin, 64, 5, 4);
+  drawMissionWindow(p, margin, 80, w - margin * 2, 760);
+  drawSignalStrip(p, margin, 856, w - margin * 2);
 
   dashedLine(p, margin, 918, w - margin, 918, 5, 4);
 
@@ -48,22 +31,26 @@ export function drawReceipt(p) {
   p.text(barcodeValue, w / 2, 1008);
 }
 
-function drawTelemetry(p, x, y, width) {
+function drawButterLabsMark(p, x, y) {
+  p.push();
   p.noStroke();
+  p.textFont("Arial Rounded MT Bold");
+  p.textStyle(p.BOLD);
+  p.textAlign(p.LEFT, p.TOP);
+  p.textSize(27);
   p.fill(0);
-  p.textFont("monospace");
-  p.textSize(8);
-  p.textAlign(p.LEFT, p.TOP);
-  p.text("ORIGIN", x, y);
-  p.text("EARTH / 37.7749 N", x, y + 15);
-  p.text("VECTOR", x + width * 0.43, y);
-  p.text("OUTBOUND / 01.00", x + width * 0.43, y + 15);
-  p.textAlign(p.RIGHT, p.TOP);
-  p.text("SEED", x + width, y);
-  p.text("000067", x + width, y + 15);
-  p.text("INK / THERMAL", x + width, y + 30);
-  p.textAlign(p.LEFT, p.TOP);
-  p.text("DESTINATION  UNKNOWN", x, y + 30);
+  p.text("ButterLabs", x, y);
+
+  const wordWidth = p.textWidth("ButterLabs");
+  p.noFill();
+  p.stroke(0);
+  p.strokeWeight(1);
+  for (let ring = 0; ring < 3; ring += 1) {
+    const ringX = x + wordWidth - 18 + ring * 3;
+    const ringY = y + 16;
+    p.ellipse(ringX, ringY, 30 + ring * 7, 19 + ring * 5);
+  }
+  p.pop();
 }
 
 function drawMissionWindow(p, x, y, width, height) {
@@ -75,7 +62,6 @@ function drawMissionWindow(p, x, y, width, height) {
   p.strokeWeight(1);
   p.rect(x + 8, y + 8, width - 16, height - 16);
 
-  // Tiny instrument ticks make the large empty field feel like a real scope.
   for (let tick = 0; tick <= 12; tick += 1) {
     const tickX = x + 22 + (width - 44) * (tick / 12);
     p.line(tickX, y + 8, tickX, y + 16);
@@ -88,14 +74,6 @@ function drawMissionWindow(p, x, y, width, height) {
   }
 
   drawGalaxy(p, x + 18, y + 24, width - 36, height - 48);
-  p.noStroke();
-  p.fill(0);
-  p.textFont("monospace");
-  p.textSize(8);
-  p.textAlign(p.LEFT, p.TOP);
-  p.text("SCOPE 01", x + 18, y + 18);
-  p.textAlign(p.RIGHT, p.TOP);
-  p.text("LIVE", x + width - 18, y + 18);
   p.pop();
 }
 
@@ -146,38 +124,16 @@ function drawGalaxy(p, x, y, width, height) {
   p.fill(0);
   p.ellipse(centerX, centerY, radius * 0.12, radius * 0.12);
 
-  p.fill(255);
-  p.textFont("monospace");
-  p.textAlign(p.CENTER, p.TOP);
-  p.textSize(9);
-  p.text("DEEP SPACE / SIGNAL FOUND", centerX, y + height - 22);
   p.pop();
 }
 
 function drawSignalStrip(p, x, y, width) {
-  p.noStroke();
-  p.fill(0);
-  p.textFont("monospace");
-  p.textStyle(p.BOLD);
-  p.textSize(9);
-  p.textAlign(p.LEFT, p.TOP);
-  p.text("SIGNAL STRENGTH", x, y);
-  p.textAlign(p.RIGHT, p.TOP);
-  p.text("98.7%", x + width, y);
-
   p.stroke(0);
   p.strokeWeight(2);
   for (let i = 0; i < 32; i += 1) {
     const barHeight = i % 5 === 0 ? 13 : i % 3 === 0 ? 9 : 5;
-    p.line(x + i * (width / 32), y + 24, x + i * (width / 32), y + 24 - barHeight);
+    p.line(x + i * (width / 32), y + 13, x + i * (width / 32), y + 13 - barHeight);
   }
-  p.noStroke();
-  p.textStyle(p.NORMAL);
-  p.textSize(8);
-  p.textAlign(p.LEFT, p.TOP);
-  p.text("THE VOID RESPONDED", x, y + 42);
-  p.textAlign(p.RIGHT, p.TOP);
-  p.text("THANK YOU FOR LOOKING UP", x + width, y + 42);
 }
 
 function drawBarcode(p, value, centerX, y) {
@@ -191,8 +147,6 @@ function drawBarcode(p, value, centerX, y) {
     background: "#ffffff",
     lineColor: "#000000",
   });
-  // Draw directly on p5's canvas: p.image expects a p5 image wrapper, while
-  // JsBarcode returns a regular browser canvas.
   p.drawingContext.drawImage(barcodeCanvas, Math.floor(centerX - barcodeCanvas.width / 2), y);
 }
 
